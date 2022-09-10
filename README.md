@@ -1,0 +1,1 @@
+# saal-object-manager
