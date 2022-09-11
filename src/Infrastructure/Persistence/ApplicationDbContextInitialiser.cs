@@ -62,38 +62,22 @@ public class ApplicationDbContextInitialiser
         }
 
         // Default users
-        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
+        var administrator = new ApplicationUser { UserName = "admin@localhost", Email = "admin@localhost" };
 
         if (_userManager.Users.All(u => u.UserName != administrator.UserName))
         {
-            await _userManager.CreateAsync(administrator, "Administrator1!");
+            await _userManager.CreateAsync(administrator, "Admin1!");
             await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
         }
 
         // Default data
         // Seed, if necessary
-        if (!_context.TodoLists.Any())
-        {
-            _context.TodoLists.Add(new TodoList
-            {
-                Title = "Todo List",
-                Items =
-                {
-                    new TodoItem { Title = "Make a todo list 📃" },
-                    new TodoItem { Title = "Check off the first item ✅" },
-                    new TodoItem { Title = "Realise you've already done two things on the list! 🤯"},
-                    new TodoItem { Title = "Reward yourself with a nice, long nap 🏆" },
-                }
-            });
-
-            await _context.SaveChangesAsync();
-        }
 
         if (!_context.ObjectTypes.Any())
         {
             _context.ObjectTypes.Add(new ObjectType
             {
-                Name = "Fruits",
+                Name = "Fruit",
                 Created = DateTime.UtcNow,
                 CreatedBy = "test user",
                 LastModified = DateTime.UtcNow,
@@ -102,7 +86,7 @@ public class ApplicationDbContextInitialiser
 
             _context.ObjectTypes.Add(new ObjectType
             {
-                Name = "Vegetables",
+                Name = "Vegetable",
                 Created = DateTime.UtcNow,
                 CreatedBy = "test user",
                 LastModified = DateTime.UtcNow,
@@ -123,22 +107,29 @@ public class ApplicationDbContextInitialiser
 
         if (!_context.Objects.Any())
         {
-            var fruitsObjectType = await _context.ObjectTypes.FirstAsync(o => o.Name == "Fruits");
-            var vegetableObjectType = await _context.ObjectTypes.FirstAsync(o => o.Name == "Vegetables");
+            var fruitObjectType = await _context.ObjectTypes.FirstAsync(o => o.Name == "Fruit");
+            var vegetableObjectType = await _context.ObjectTypes.FirstAsync(o => o.Name == "Vegetable");
 
             _context.Objects.Add(new Object
             {
                 Name = "Mango",
                 Description = "A mango is a sweet tropical fruit, and it's also the name of the trees on which the fruit grows",
-                ObjectType = fruitsObjectType                
+                ObjectType = fruitObjectType                
             });
 
             _context.Objects.Add(new Object
             {
                 Name = "Guava",
                 Description = "The fruits are round to pear-shaped and measure up to 7.6 cm in diameter; their pulp contains many small hard seeds (more abundant in wild forms than in cultivated varieties). The fruit has a yellow skin and white, yellow, or pink flesh. The musky, at times pungent, odour of the sweet pulp is not always appreciated.",
-                ObjectType = fruitsObjectType
+                ObjectType = fruitObjectType
             });
+
+            var lettuce = new Object
+            {
+                Name = "Lettuce",
+                Description = "Lettuce (Lactuca sativa) is an annual plant of the family Asteraceae. It is most often grown as a leaf vegetable, but sometimes for its stem and seeds. Lettuce is most often used for salads, although it is also seen in other kinds of food, such as soups, sandwiches and wraps; it can also be grilled.",
+                ObjectType = vegetableObjectType
+            };
 
             var tomato = new Object
             {
@@ -172,6 +163,7 @@ public class ApplicationDbContextInitialiser
             _context.Objects.Add(cucumber);
             _context.Objects.Add(onion);
             _context.Objects.Add(salad);
+            _context.ObjectRelationships.Add(new ObjectRelationship { Object = salad, RelatedObject = lettuce });
             _context.ObjectRelationships.Add(new ObjectRelationship { Object = salad, RelatedObject = tomato });
             _context.ObjectRelationships.Add(new ObjectRelationship { Object = salad, RelatedObject = cucumber });
             _context.ObjectRelationships.Add(new ObjectRelationship { Object = salad, RelatedObject = onion });
