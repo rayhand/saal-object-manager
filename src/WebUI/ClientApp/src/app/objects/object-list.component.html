@@ -1,0 +1,51 @@
+<h1 id="tableLabel">Object Manager</h1>
+
+<p>Simple CRUD operations demo</p>
+
+<p *ngIf="!paginatedList"><em>Loading...</em></p>
+
+<div class="input-group mb-2 mt-4">
+  <input type="text"
+         class="form-control"
+         placeholder="Search"
+         [(ngModel)]="searchTerm"
+         (keyup.enter)="search()"
+         />
+  
+  <div class="input-group-append">
+    <button class="btn btn-outline-secondary"
+            type="button"
+      (click)="search()" >
+      Search
+    </button>
+  </div>
+</div>
+
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="paginatedList">
+  <thead>
+    <tr>
+      <th width="20%">Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>
+        <button class="btn btn-primary btn-xs" role="button">
+          New
+        </button>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let obj of paginatedList.items">
+      <td>{{ obj.name }}</td>
+      <td>{{ obj.objectType.name }}</td>
+      <td>{{ obj.description }}</td>
+      <td>
+        <div class="todo-item-commands">
+          <button class="btn btn-default btn-xs" role="button">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
