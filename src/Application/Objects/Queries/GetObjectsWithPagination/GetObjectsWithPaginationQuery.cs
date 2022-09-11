@@ -17,7 +17,7 @@ public record GetObjectsWithPaginationQuery : IRequest<PaginatedList<ObjectBrief
 }
 
 public class GetObjectsWithPaginationQueryHandler : IRequestHandler<GetObjectsWithPaginationQuery, PaginatedList<ObjectBriefDto>>
-{
+{ 
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
@@ -32,7 +32,8 @@ public class GetObjectsWithPaginationQueryHandler : IRequestHandler<GetObjectsWi
         // TODO: Consider using Specification Pattern if possible
 
         return await _context.Objects
-            .Where(x => string.IsNullOrEmpty(request.SearchQuery) || (x.Name.Contains(request.SearchQuery) || x.Description.Contains(request.SearchQuery) ))
+            .Where(x => string.IsNullOrEmpty(request.SearchQuery) || x.Name.Contains(request.SearchQuery) 
+                      || (x.Description != null && x.Description.Contains(request.SearchQuery)) )
             .OrderBy(x => x.Name)
             .AsNoTracking()
             .ProjectTo<ObjectBriefDto>(_mapper.ConfigurationProvider)
