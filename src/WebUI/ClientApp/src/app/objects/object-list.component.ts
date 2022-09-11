@@ -15,6 +15,7 @@ export class ObjectListComponent {
 
   itemDetailsEditor: any;
   itemDetailsModalRef: BsModalRef;
+  errorMsg: string = '';
 
   keyword = 'name';
   data: any = [];
@@ -34,8 +35,7 @@ export class ObjectListComponent {
     ) { }
 
   ngOnInit(): void {
-    this.search();
-    //this.searchObjectTypes();
+    this.search();    
   }
 
   search(): void {
@@ -80,8 +80,28 @@ export class ObjectListComponent {
       () => {
         this.itemDetailsModalRef.hide();
         this.itemDetailsEditor = {};
+        this.errorMsg = '',
+        this.search();
+
       },
-      error => console.error(error)
+      error => {
+        let msg = 'Error saving object';
+
+        // This Problem Detail error handling should be an Interceptor or similar
+        if (error.status === 400 && error.response) {
+          let response = JSON.parse(error.response);
+          if (response.title) {
+            msg = response.title;
+          }
+          if (response.errors) {
+            Object.entries(response.errors).forEach(([key, value], index) => {             
+              msg += " ["+value + "]";
+            });
+          }
+        }
+        this.errorMsg = msg;
+        console.error(error);
+      }
     );
   }
 
@@ -159,6 +179,11 @@ export class ObjectListComponent {
 
   objectSearchCleared() {    
     this.objectAutoCompleteData = [];
+  }
+
+  deleteRelationship(item: ObjectBriefDto) {
+    const itemIndex = this.itemDetailsEditor.relatedObjects.indexOf(item);
+    this.itemDetailsEditor.relatedObjects.splice(itemIndex, 1);
   }
 
 }

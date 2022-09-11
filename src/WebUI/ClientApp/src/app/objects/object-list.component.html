@@ -122,7 +122,7 @@
                              placeholder="Search object to add. eg 'mango'">
             </ng-autocomplete>
 
-            <ng-template #itemObjectTemplate let-item>             
+            <ng-template #itemObjectTemplate let-item>
               <span style="padding-left: 10px !important" [innerHTML]="item.name"></span> (<span class="text-muted" [innerHTML]="item.objectType.name"></span>)
             </ng-template>
           </div>
@@ -135,7 +135,7 @@
                 {{ relationship.name }}
               </div>
               <div class="float-end text-right">
-                <i class="bi bi-trash"></i>
+                <i class="bi bi-trash" (click)="deleteRelationship(relationship)"></i>
               </div>
             </div>
           </li>
@@ -145,6 +145,10 @@
     </div>
     <div *ngIf="debug">
       <pre>{{ itemDetailsEditor | json }}</pre>
+    </div>
+
+    <div *ngIf="errorMsg" class="mt-2 text-danger">
+      {{errorMsg}}
     </div>
   </div>
   <div class="modal-footer">
