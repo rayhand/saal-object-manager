@@ -27,7 +27,9 @@
       <th>Type</th>
       <th>Description</th>
       <th>
-        <button class="btn btn-primary btn-xs" role="button">
+        <button class="btn btn-primary btn-xs" role="button"
+                 (click)="addNew()"
+                >
           New
         </button>
       </th>
@@ -78,22 +80,16 @@
                            (inputChanged)='getServerResponse($event)'
                            (inputFocused)='onFocused($event)'
                            [itemTemplate]="itemTemplate"
-                           (inputCleared)="searchCleared()"
-                           [notFoundTemplate]="notFoundTemplate"
+                           (inputCleared)="searchCleared()"                           
                            [debounceTime]="600"
                            [isLoading]="isLoadingResult"
                            [minQueryLength]="2"
                            placeholder="Search object types. eg 'fruit'">
           </ng-autocomplete>
 
-
           <ng-template #itemTemplate let-item>
             <a [innerHTML]="item.name"></a>
-          </ng-template>
-
-          <ng-template #notFoundTemplate let-notFound>
-            <div [innerHTML]="notFound">No results</div>
-          </ng-template>
+          </ng-template>         
         </div>
 
       </div>
@@ -101,8 +97,6 @@
         <label for="description">Description</label>
         <textarea id="description" class="form-control" rows="6" maxlength="500" [(ngModel)]="itemDetailsEditor.description"></textarea>
       </div>
-
-
 
       <div *ngIf="itemDetailsEditor.relatedObjects">
         <h5>Relationships ({{itemDetailsEditor.relatedObjects.length}})</h5>
@@ -113,6 +107,7 @@
                              [data]="objectAutoCompleteData"
                              [searchKeyword]="keyword"
                              (selected)='objectSelectEvent($event)'
+                             (inputFocused)='objectOnFocused($event)'
                              (inputChanged)='objectGetAutocompleServerResponse($event)'
                              (inputCleared)="objectSearchCleared()"
                              [itemTemplate]="itemObjectTemplate"

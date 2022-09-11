@@ -1,6 +1,6 @@
 import { Component, TemplateRef, OnInit, ViewChild } from '@angular/core';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
-import { ObjectBriefDto, ObjectDto, ObjectsClient, ObjectsTypesClient, ObjectTypeDto, PaginatedListOfObjectBriefDto, UpdateObjectCommand } from '../web-api-client';
+import { CreateObjectCommand, ObjectBriefDto, ObjectDto, ObjectsClient, ObjectsTypesClient, ObjectTypeDto, PaginatedListOfObjectBriefDto, UpdateObjectCommand } from '../web-api-client';
 
 @Component({
   selector: 'app-object-list',
@@ -15,6 +15,7 @@ export class ObjectListComponent {
 
   itemDetailsEditor: any;
   itemDetailsModalRef: BsModalRef;
+  @ViewChild('itemDetailsModalTemplate') itemDetailsModalTemplate;
   errorMsg: string = '';
 
   keyword = 'name';
@@ -46,14 +47,21 @@ export class ObjectListComponent {
 
   getServerResponse(event) {
     this.isLoadingResult = true;
-    this.objectTypesClient.getObjectTypesWithPaginationQuery(this.searchTerm, 1, 10).subscribe(result => {
+    this.objectTypesClient.getObjectTypesWithPaginationQuery(event, 1, 10).subscribe(result => {
       this.data = result.items;
     }, error => {
       console.error(error);
     },
-      () => {
-        this.isLoadingResult = false;
-      });
+    () => {
+      this.isLoadingResult = false;
+    });
+  }
+
+  addNew() {
+    let newObject = new ObjectDto({ name: '', relatedObjects: []});
+    this.itemDetailsEditor = newObject;
+    this.initialObjectTypeValue = '';
+    this.itemDetailsModalRef = this.modalService.show(this.itemDetailsModalTemplate);
   }
 
   
@@ -69,40 +77,60 @@ export class ObjectListComponent {
 
   updateItemDetails(): void {
     const item = this.itemDetailsEditor
-    const cmd = new UpdateObjectCommand({
+
+    const fields = {
       id: item.id,
       name: item.name,
       description: item.description,
-      objectTypeId: item.objectType.id,
+      objectTypeId: item.objectType?.id,
       relatedObjects: item.relatedObjects.map(x => x.id)
-    });
-    this.client.update(item.id, cmd).subscribe(
-      () => {
-        this.itemDetailsModalRef.hide();
-        this.itemDetailsEditor = {};
-        this.errorMsg = '',
-        this.search();
+    }
+   
+    if (item.id) {
+      // Update existing object
+      const cmd = new UpdateObjectCommand(fields);
+      this.client.update(item.id, cmd).subscribe(
+        () => {
+          this.itemDetailsModalRef.hide();
+          this.itemDetailsEditor = {};
+          this.errorMsg = '',
+          this.search();
+        },
+        error => this.handleError(error)
+      );
+    } else {
+      // Create new object
+      const cmd = new CreateObjectCommand(fields);
+      this.client.create(cmd).subscribe(
+        () => {
+          this.itemDetailsModalRef.hide();
+          this.itemDetailsEditor = {};
+          this.errorMsg = '',
+            this.search();
+        },
+        error => this.handleError(error)
+      );
+    }
 
-      },
-      error => {
-        let msg = 'Error saving object';
+    
+  }
+  handleError(error) {
+    let msg = 'Error saving object';
 
-        // This Problem Detail error handling should be an Interceptor or similar
-        if (error.status === 400 && error.response) {
-          let response = JSON.parse(error.response);
-          if (response.title) {
-            msg = response.title;
-          }
-          if (response.errors) {
-            Object.entries(response.errors).forEach(([key, value], index) => {             
-              msg += " ["+value + "]";
-            });
-          }
-        }
-        this.errorMsg = msg;
-        console.error(error);
+    // This Problem Detail error handling should be an Interceptor or similar
+    if (error.status === 400 && error.response) {
+      let response = JSON.parse(error.response);
+      if (response.title) {
+        msg = response.title;
       }
-    );
+      if (response.errors) {
+        Object.entries(response.errors).forEach(([key, value], index) => {
+          msg += " [" + value + "]";
+        });
+      }
+    }
+    this.errorMsg = msg;
+    console.error(error);
   }
 
   deleteItem(item: ObjectBriefDto) {
@@ -121,23 +149,19 @@ export class ObjectListComponent {
   }
 
   searchCleared() {
+    this.itemDetailsEditor.objectType = null;
     this.initialObjectTypeValue = null;
     this.data = [];
   }
 
   selectEvent(item) {
     // do something with selected item
-    this.itemDetailsEditor.objectType = item;
-    console.log(item);
-  }
-
-  onChangeSearch(val: string) {
-    // fetch remote data from here
-    // And reassign the 'data' which is binded to 'data' property.
+    this.itemDetailsEditor.objectType = item;   
   }
 
   onFocused(e) {
     // do something when input is focused
+    this.getServerResponse('');
   }
 
 
@@ -157,24 +181,16 @@ export class ObjectListComponent {
     });
   }
 
-  objectSelectEvent(item) {
-    // do something with selected item
-    //this.selectedObject = item;
+  objectSelectEvent(item) {    
     var newItem = { ...item };
     this.itemDetailsEditor.relatedObjects.push(newItem);
-
     console.log(this.objectAutocomplete);
     //this.objectAutocomplete.clear();
     //this.objectSearchCleared();
   }
 
-  objectOnChangeSearch(val: string) {
-    // fetch remote data from here
-    // And reassign the 'data' which is binded to 'data' property.
-  }
-
   objectOnFocused(e) {
-    
+    this.objectGetAutocompleServerResponse('');
   }
 
   objectSearchCleared() {    
