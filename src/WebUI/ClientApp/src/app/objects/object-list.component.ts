@@ -1,19 +1,41 @@
-import { Component } from '@angular/core';
-import { WeatherForecastClient, WeatherForecast, ObjectBriefDto, ObjectsClient, PaginatedListOfObjectBriefDto } from '../web-api-client';
+import { Component, TemplateRef, OnInit, ViewChild } from '@angular/core';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { ObjectBriefDto, ObjectDto, ObjectsClient, ObjectsTypesClient, ObjectTypeDto, PaginatedListOfObjectBriefDto, UpdateObjectCommand } from '../web-api-client';
 
 @Component({
   selector: 'app-object-list',
-  templateUrl: './object-list.component.html'
+  templateUrl: './object-list.component.html',
+  styleUrls: ['./object-list.component.scss']
 })
 export class ObjectListComponent {
-  
-  public paginatedList: PaginatedListOfObjectBriefDto;
-  public searchTerm: string = '';
+  debug = false;
+  paginatedList: PaginatedListOfObjectBriefDto;
+  searchTerm: string = '';
+  selectedItem: ObjectBriefDto;
 
-  constructor(private client: ObjectsClient) {
-    client.getObjectsWithPagination("",1,10).subscribe(result => {
-      this.paginatedList = result;
-    }, error => console.error(error));
+  itemDetailsEditor: any;
+  itemDetailsModalRef: BsModalRef;
+
+  keyword = 'name';
+  data: any = [];
+  isLoadingResult: boolean;
+  initialObjectTypeValue: any;
+
+
+  @ViewChild('objectauto') objectAutocomplete;
+  isLoadingObjectsResult: boolean;
+  objectAutoCompleteData: ObjectBriefDto[] = [];
+  selectedObject: ObjectBriefDto;
+
+  constructor
+    (private client: ObjectsClient,
+      private objectTypesClient: ObjectsTypesClient,
+      private modalService: BsModalService
+    ) { }
+
+  ngOnInit(): void {
+    this.search();
+    //this.searchObjectTypes();
   }
 
   search(): void {
@@ -21,4 +43,122 @@ export class ObjectListComponent {
       this.paginatedList = result;
     }, error => console.error(error));
   }
+
+  getServerResponse(event) {
+    this.isLoadingResult = true;
+    this.objectTypesClient.getObjectTypesWithPaginationQuery(this.searchTerm, 1, 10).subscribe(result => {
+      this.data = result.items;
+    }, error => {
+      console.error(error);
+    },
+      () => {
+        this.isLoadingResult = false;
+      });
+  }
+
+  
+  showItemDetailsModal(template: TemplateRef<any>, item: ObjectBriefDto): void {
+    this.selectedItem = item;
+
+    this.client.getObjectDetails(item.id).subscribe(result => {
+      this.itemDetailsEditor = result;
+      this.initialObjectTypeValue = result.objectType;
+      this.itemDetailsModalRef = this.modalService.show(template);
+    }, error => console.error(error));
+  }
+
+  updateItemDetails(): void {
+    const item = this.itemDetailsEditor
+    const cmd = new UpdateObjectCommand({
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      objectTypeId: item.objectType.id,
+      relatedObjects: item.relatedObjects.map(x => x.id)
+    });
+    this.client.update(item.id, cmd).subscribe(
+      () => {
+        this.itemDetailsModalRef.hide();
+        this.itemDetailsEditor = {};
+      },
+      error => console.error(error)
+    );
+  }
+
+  deleteItem(item: ObjectBriefDto) {
+    if (this.itemDetailsModalRef) {
+      this.itemDetailsModalRef.hide();
+    }
+
+    if (item.id !== null) {     
+      this.client.delete(item.id).subscribe(
+        () => (this.paginatedList.items = this.paginatedList.items.filter(
+          t => t.id !== item.id
+        )),        
+        error => console.error(error)
+      );
+    }
+  }
+
+  searchCleared() {
+    this.initialObjectTypeValue = null;
+    this.data = [];
+  }
+
+  selectEvent(item) {
+    // do something with selected item
+    this.itemDetailsEditor.objectType = item;
+    console.log(item);
+  }
+
+  onChangeSearch(val: string) {
+    // fetch remote data from here
+    // And reassign the 'data' which is binded to 'data' property.
+  }
+
+  onFocused(e) {
+    // do something when input is focused
+  }
+
+
+
+
+  /* Relationships*/
+
+  objectGetAutocompleServerResponse(event) {
+    this.isLoadingObjectsResult = true;
+    this.client.getObjectsWithPagination(event, 1, 10).subscribe(result => {
+      this.objectAutoCompleteData = result.items;
+    }, error => {
+      console.error(error);
+    },
+    () => {
+      this.isLoadingObjectsResult = false;
+    });
+  }
+
+  objectSelectEvent(item) {
+    // do something with selected item
+    //this.selectedObject = item;
+    var newItem = { ...item };
+    this.itemDetailsEditor.relatedObjects.push(newItem);
+
+    console.log(this.objectAutocomplete);
+    //this.objectAutocomplete.clear();
+    //this.objectSearchCleared();
+  }
+
+  objectOnChangeSearch(val: string) {
+    // fetch remote data from here
+    // And reassign the 'data' which is binded to 'data' property.
+  }
+
+  objectOnFocused(e) {
+    
+  }
+
+  objectSearchCleared() {    
+    this.objectAutoCompleteData = [];
+  }
+
 }

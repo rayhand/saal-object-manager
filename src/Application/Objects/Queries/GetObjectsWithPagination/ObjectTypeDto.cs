@@ -1,7 +1,7 @@
 ﻿using OMS.Application.Common.Mappings;
 using OMS.Domain.Entities;
 
-namespace OMS.Application.TodoItems.Queries.GetTodoItemsWithPagination;
+namespace OMS.Application.Objects.Queries.GetObjectsWithPagination;
 
 public class ObjectTypeDto : IMapFrom<ObjectType>
 {

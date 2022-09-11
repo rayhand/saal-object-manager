@@ -9,13 +9,12 @@
          class="form-control"
          placeholder="Search"
          [(ngModel)]="searchTerm"
-         (keyup.enter)="search()"
-         />
-  
+         (keyup.enter)="search()" />
+
   <div class="input-group-append">
     <button class="btn btn-outline-secondary"
             type="button"
-      (click)="search()" >
+            (click)="search()">
       Search
     </button>
   </div>
@@ -35,13 +34,14 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let obj of paginatedList.items">
-      <td>{{ obj.name }}</td>
-      <td>{{ obj.objectType.name }}</td>
-      <td>{{ obj.description }}</td>
+    <tr *ngFor="let item of paginatedList.items">
+      <td>{{ item.name }}</td>
+      <td>{{ item.objectType.name }}</td>
+      <td>{{ item.description }}</td>
       <td>
         <div class="todo-item-commands">
-          <button class="btn btn-default btn-xs" role="button">
+          <button *ngIf="item.id != null" (click)="showItemDetailsModal(itemDetailsModalTemplate, item)"
+                  class="btn btn-default btn-xs" role="button">
             <i class="bi bi-three-dots-vertical"></i>
           </button>
         </div>
@@ -49,3 +49,113 @@
     </tr>
   </tbody>
 </table>
+
+
+<!-- Details Modal -->
+<ng-template #itemDetailsModalTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Object '{{ itemDetailsEditor.name }}' details </h4>
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="itemDetailsModalRef.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form">
+      <div class="form-group mb-3">
+        <label for="name">Name</label>
+        <input type="text" class="form-control"
+               [(ngModel)]="itemDetailsEditor.name" />
+      </div>
+      <div class="form-group mb-3">
+        <label for="priority">Type</label>
+
+        <div class="ng-autocomplete">
+          <ng-autocomplete id="objectTypesAutocomplete"
+                           [data]="data"
+                           [initialValue]="initialObjectTypeValue"
+                           [searchKeyword]="keyword"
+                           (selected)='selectEvent($event)'
+                           (inputChanged)='getServerResponse($event)'
+                           (inputFocused)='onFocused($event)'
+                           [itemTemplate]="itemTemplate"
+                           (inputCleared)="searchCleared()"
+                           [notFoundTemplate]="notFoundTemplate"
+                           [debounceTime]="600"
+                           [isLoading]="isLoadingResult"
+                           [minQueryLength]="2"
+                           placeholder="Search object types. eg 'fruit'">
+          </ng-autocomplete>
+
+
+          <ng-template #itemTemplate let-item>
+            <a [innerHTML]="item.name"></a>
+          </ng-template>
+
+          <ng-template #notFoundTemplate let-notFound>
+            <div [innerHTML]="notFound">No results</div>
+          </ng-template>
+        </div>
+
+      </div>
+      <div class="form-group mb-4">
+        <label for="description">Description</label>
+        <textarea id="description" class="form-control" rows="6" maxlength="500" [(ngModel)]="itemDetailsEditor.description"></textarea>
+      </div>
+
+
+
+      <div *ngIf="itemDetailsEditor.relatedObjects">
+        <h5>Relationships ({{itemDetailsEditor.relatedObjects.length}})</h5>
+        <div class="input-group mb-2 mt-2">
+          <div class="ng-autocomplete">
+            <ng-autocomplete id="objectAutocompleteId" #objectauto
+                             aria-describedby="Related Object"
+                             [data]="objectAutoCompleteData"
+                             [searchKeyword]="keyword"
+                             (selected)='objectSelectEvent($event)'
+                             (inputChanged)='objectGetAutocompleServerResponse($event)'
+                             (inputCleared)="objectSearchCleared()"
+                             [itemTemplate]="itemObjectTemplate"
+                             [debounceTime]="600"
+                             [isLoading]="isLoadingObjectsResult"
+                             [minQueryLength]="2"
+                             placeholder="Search object to add. eg 'mango'">
+            </ng-autocomplete>
+
+            <ng-template #itemObjectTemplate let-item>             
+              <span style="padding-left: 10px !important" [innerHTML]="item.name"></span> (<span class="text-muted" [innerHTML]="item.objectType.name"></span>)
+            </ng-template>
+          </div>
+        </div>
+
+        <ul class="list-group">
+          <li *ngFor="let relationship of itemDetailsEditor.relatedObjects; index as i" class="list-group-item">
+            <div class="clearfix">
+              <div class="float-start">
+                {{ relationship.name }}
+              </div>
+              <div class="float-end text-right">
+                <i class="bi bi-trash"></i>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+    <div *ngIf="debug">
+      <pre>{{ itemDetailsEditor | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="clearfix">
+      <div class="float-start">
+        <button class="btn btn-default text-danger" (click)="deleteItem(selectedItem)">Delete</button>
+      </div>
+      <div class="float-end">
+        <button class="btn btn-default" (click)="itemDetailsModalRef.hide()">Cancel</button>
+        <button class="btn btn-primary" (click)="updateItemDetails()">Save</button>
+      </div>
+    </div>
+  </div>
+</ng-template>

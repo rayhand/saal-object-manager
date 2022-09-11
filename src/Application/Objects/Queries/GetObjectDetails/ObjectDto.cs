@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using OMS.Application.Common.Mappings;
+using OMS.Application.Objects.Queries.GetObjectsWithPagination;
 using OMS.Application.TodoItems.Queries.GetTodoItemsWithPagination;
 using Object = OMS.Domain.Entities.Object;
 

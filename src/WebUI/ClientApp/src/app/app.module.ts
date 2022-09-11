@@ -18,6 +18,7 @@ import { ApiAuthorizationModule } from 'src/api-authorization/api-authorization.
 import { AuthorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ObjectListComponent } from './objects/object-list.component';
+import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 
 
 @NgModule({
@@ -38,6 +39,7 @@ import { ObjectListComponent } from './objects/object-list.component';
     ApiAuthorizationModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    AutocompleteLibModule,
     ModalModule.forRoot()
   ],
   providers: [

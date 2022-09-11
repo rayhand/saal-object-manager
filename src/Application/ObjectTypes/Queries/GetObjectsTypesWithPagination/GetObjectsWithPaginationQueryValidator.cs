@@ -1,11 +1,13 @@
 ﻿using FluentValidation;
+using OMS.Application.ObjectTypes.Queries.GetObjectsTypesWithPagination;
 
 namespace OMS.Application.TodoItems.Queries.GetTodoItemsWithPagination;
 
-public class GetObjectsWithPaginationQueryValidator : AbstractValidator<GetObjectsWithPaginationQuery>
+public class GetObjectTypesWithPaginationQueryValidator : AbstractValidator<GetObjectTypesWithPaginationQuery>
 {
-    public GetObjectsWithPaginationQueryValidator()
+    public GetObjectTypesWithPaginationQueryValidator()
     {
+
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1).WithMessage("PageNumber at least greater than or equal to 1.");
 
