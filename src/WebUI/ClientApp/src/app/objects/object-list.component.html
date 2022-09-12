@@ -7,14 +7,14 @@
 <div class="input-group mb-2 mt-4">
   <input type="text"
          class="form-control"
-         placeholder="Search"
+         placeholder="Search by name and description, hit Enter or click Search button"
          [(ngModel)]="searchTerm"
-         (keyup.enter)="search()" />
+         (keyup.enter)="search(1)" />
 
   <div class="input-group-append">
     <button class="btn btn-outline-secondary"
             type="button"
-            (click)="search()">
+            (click)="search(1)">
       Search
     </button>
   </div>
@@ -28,8 +28,7 @@
       <th>Description</th>
       <th>
         <button class="btn btn-primary btn-xs" role="button"
-                 (click)="addNew()"
-                >
+                (click)="addNew()">
           New
         </button>
       </th>
@@ -52,6 +51,25 @@
   </tbody>
 </table>
 
+<!-- Custom Simple Pagination-->
+<nav *ngIf="paginatedList" aria-label="Page navigation example">
+  <ul class="pagination">
+    <li class="page-item" [class.disabled]="!paginatedList.hasPreviousPage">
+      <a *ngIf="paginatedList.hasPreviousPage; else elsePreviousBlock" class="page-link"
+         (click)="search(paginatedList.pageNumber - 1)">Previous</a>
+      <ng-template #elsePreviousBlock> <span class="page-link">Previous</span></ng-template>
+    </li>
+    <li class="page-item" [class.disabled]="!paginatedList.hasNextPage">
+      <a *ngIf="paginatedList.hasNextPage; else elseNextBlock" class="page-link"
+         (click)="search(paginatedList.pageNumber + 1)">Next</a>
+      <ng-template #elseNextBlock> <span class="page-link">Next</span></ng-template>
+    </li>
+
+    <li class="p-2">
+      <div class="pl-5">Showing page {{paginatedList.pageNumber}}/{{paginatedList.totalPages}} of {{paginatedList.totalCount}} total objects.</div>
+    </li>
+  </ul>
+</nav>
 
 <!-- Details Modal -->
 <ng-template #itemDetailsModalTemplate>
@@ -80,7 +98,7 @@
                            (inputChanged)='getServerResponse($event)'
                            (inputFocused)='onFocused($event)'
                            [itemTemplate]="itemTemplate"
-                           (inputCleared)="searchCleared()"                           
+                           (inputCleared)="searchCleared()"
                            [debounceTime]="600"
                            [isLoading]="isLoadingResult"
                            [minQueryLength]="2"
@@ -89,7 +107,7 @@
 
           <ng-template #itemTemplate let-item>
             <a [innerHTML]="item.name"></a>
-          </ng-template>         
+          </ng-template>
         </div>
 
       </div>

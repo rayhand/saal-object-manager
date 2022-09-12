@@ -36,11 +36,11 @@ export class ObjectListComponent {
     ) { }
 
   ngOnInit(): void {
-    this.search();    
+    this.search(1);    
   }
 
-  search(): void {
-    this.client.getObjectsWithPagination(this.searchTerm, 1, 10).subscribe(result => {
+  search(page: number): void {
+    this.client.getObjectsWithPagination(this.searchTerm, page, 10).subscribe(result => {
       this.paginatedList = result;
     }, error => console.error(error));
   }
@@ -95,7 +95,7 @@ export class ObjectListComponent {
           this.itemDetailsModalRef.hide();
           this.itemDetailsEditor = {};
           this.errorMsg = '',
-          this.search();
+          this.search(1);
         },
         error => this.handleError(error)
       );
@@ -107,7 +107,7 @@ export class ObjectListComponent {
           this.itemDetailsModalRef.hide();
           this.itemDetailsEditor = {};
           this.errorMsg = '',
-            this.search();
+            this.search(1);
         },
         error => this.handleError(error)
       );

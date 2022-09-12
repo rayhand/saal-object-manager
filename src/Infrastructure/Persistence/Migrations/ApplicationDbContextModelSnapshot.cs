@@ -105,7 +105,7 @@ namespace OMS.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("Use");
 
-                    b.ToTable("Keys");
+                    b.ToTable("Keys", (string)null);
                 });
 
             modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.PersistedGrant", b =>
@@ -386,79 +386,6 @@ namespace OMS.Infrastructure.Persistence.Migrations
                     b.ToTable("ObjectTypes");
                 });
 
-            modelBuilder.Entity("OMS.Domain.Entities.TodoItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Done")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ListId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Reminder")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ListId");
-
-                    b.ToTable("TodoItems");
-                });
-
-            modelBuilder.Entity("OMS.Domain.Entities.TodoList", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TodoLists");
-                });
-
             modelBuilder.Entity("OMS.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -605,40 +532,6 @@ namespace OMS.Infrastructure.Persistence.Migrations
                     b.Navigation("RelatedObject");
                 });
 
-            modelBuilder.Entity("OMS.Domain.Entities.TodoItem", b =>
-                {
-                    b.HasOne("OMS.Domain.Entities.TodoList", "List")
-                        .WithMany("Items")
-                        .HasForeignKey("ListId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("List");
-                });
-
-            modelBuilder.Entity("OMS.Domain.Entities.TodoList", b =>
-                {
-                    b.OwnsOne("OMS.Domain.ValueObjects.Colour", "Colour", b1 =>
-                        {
-                            b1.Property<Guid>("TodoListId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Code")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("TodoListId");
-
-                            b1.ToTable("TodoLists");
-
-                            b1.WithOwner()
-                                .HasForeignKey("TodoListId");
-                        });
-
-                    b.Navigation("Colour")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("OMS.Domain.Entities.Object", b =>
                 {
                     b.Navigation("ObjectRelationshipObjects");
@@ -649,11 +542,6 @@ namespace OMS.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("OMS.Domain.Entities.ObjectType", b =>
                 {
                     b.Navigation("Objects");
-                });
-
-            modelBuilder.Entity("OMS.Domain.Entities.TodoList", b =>
-                {
-                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }
