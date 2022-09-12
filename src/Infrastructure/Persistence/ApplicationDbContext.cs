@@ -13,28 +13,21 @@ using Object = OMS.Domain.Entities.Object;
 namespace OMS.Infrastructure.Persistence;
 
 public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, IApplicationDbContext
-{
-    private readonly IMediator _mediator;
+{   
     private readonly AuditableEntitySaveChangesInterceptor _auditableEntitySaveChangesInterceptor;
 
     public ApplicationDbContext(
         DbContextOptions<ApplicationDbContext> options,
-        IOptions<OperationalStoreOptions> operationalStoreOptions,
-        IMediator mediator,
+        IOptions<OperationalStoreOptions> operationalStoreOptions,        
         AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor) 
         : base(options, operationalStoreOptions)
-    {
-        _mediator = mediator;
+    {       
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
     }
 
     public DbSet<Object> Objects => Set<Object>();
     public DbSet<ObjectRelationship> ObjectRelationships => Set<ObjectRelationship>();
     public DbSet<ObjectType> ObjectTypes => Set<ObjectType>();
-
-    public DbSet<TodoList> TodoLists => Set<TodoList>();
-
-    public DbSet<TodoItem> TodoItems => Set<TodoItem>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -50,8 +43,6 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        await _mediator.DispatchDomainEvents(this);
-
         return await base.SaveChangesAsync(cancellationToken);
     }
 }

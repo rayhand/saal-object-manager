@@ -69,6 +69,7 @@ export class ObjectListComponent {
     this.selectedItem = item;
 
     this.client.getObjectDetails(item.id).subscribe(result => {
+      this.errorMsg = '';
       this.itemDetailsEditor = result;
       this.initialObjectTypeValue = result.objectType;
       this.itemDetailsModalRef = this.modalService.show(template);

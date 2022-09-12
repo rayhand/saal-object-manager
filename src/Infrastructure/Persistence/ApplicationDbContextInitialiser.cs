@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Object = OMS.Domain.Entities.Object;
+using OMS.Infrastructure.Common;
 
 namespace OMS.Infrastructure.Persistence;
 
@@ -73,37 +74,35 @@ public class ApplicationDbContextInitialiser
         // Default data
         // Seed, if necessary
 
-        if (!_context.ObjectTypes.Any())
+        _context.ObjectTypes.AddIfNotExists(new ObjectType
         {
-            _context.ObjectTypes.Add(new ObjectType
-            {
-                Name = "Fruit",
-                Created = DateTime.UtcNow,
-                CreatedBy = "test user",
-                LastModified = DateTime.UtcNow,
-                LastModifiedBy = "test user"
-            });
+            Name = "Fruit",
+            Created = DateTime.UtcNow,
+            CreatedBy = "test user",
+            LastModified = DateTime.UtcNow,
+            LastModifiedBy = "test user"
+        }, o => o.Name == "Fruit");
 
-            _context.ObjectTypes.Add(new ObjectType
-            {
-                Name = "Vegetable",
-                Created = DateTime.UtcNow,
-                CreatedBy = "test user",
-                LastModified = DateTime.UtcNow,
-                LastModifiedBy = "test user"
-            });
+        _context.ObjectTypes.AddIfNotExists(new ObjectType
+        {
+            Name = "Vegetable",
+            Created = DateTime.UtcNow,
+            CreatedBy = "test user",
+            LastModified = DateTime.UtcNow,
+            LastModifiedBy = "test user"
+        }, o => o.Name == "Vegetable");
 
-            _context.ObjectTypes.Add(new ObjectType
-            {
-                Name = "Food",
-                Created = DateTime.UtcNow,
-                CreatedBy = "test user",
-                LastModified = DateTime.UtcNow,
-                LastModifiedBy = "test user"
-            });
+        _context.ObjectTypes.AddIfNotExists(new ObjectType
+        {
+            Name = "Food",
+            Created = DateTime.UtcNow,
+            CreatedBy = "test user",
+            LastModified = DateTime.UtcNow,
+            LastModifiedBy = "test user"
+        }, o => o.Name == "Food");
 
-            await _context.SaveChangesAsync();
-        }
+        await _context.SaveChangesAsync();
+
 
         if (!_context.Objects.Any())
         {
@@ -114,7 +113,7 @@ public class ApplicationDbContextInitialiser
             {
                 Name = "Mango",
                 Description = "A mango is a sweet tropical fruit, and it's also the name of the trees on which the fruit grows",
-                ObjectType = fruitObjectType                
+                ObjectType = fruitObjectType
             });
 
             _context.Objects.Add(new Object
@@ -156,7 +155,7 @@ public class ApplicationDbContextInitialiser
             {
                 Name = "Salad",
                 Description = "a mixture of raw usually green leafy vegetables (as lettuce) combined with other vegetables (as tomato and cucumber) and served with a dressing.",
-                ObjectType = vegetableObjectType                
+                ObjectType = vegetableObjectType
             };
 
             _context.Objects.Add(tomato);

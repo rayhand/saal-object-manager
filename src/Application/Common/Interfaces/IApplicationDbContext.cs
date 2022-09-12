@@ -9,7 +9,6 @@ public interface IApplicationDbContext
     DbSet<Object> Objects { get; }
     DbSet<ObjectRelationship> ObjectRelationships { get; }
     DbSet<ObjectType> ObjectTypes { get; }
-    DbSet<TodoList> TodoLists { get; }
-    DbSet<TodoItem> TodoItems { get; }
+    
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

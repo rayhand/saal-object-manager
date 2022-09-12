@@ -34,7 +34,7 @@ public class UpdateObjectCommandHandler : IRequestHandler<UpdateObjectCommand>
             .Include(o => o.ObjectRelationshipObjects)
                 .ThenInclude(p => p.RelatedObject)
                 .ThenInclude(q => q.ObjectType)
-            .FirstAsync(o => o.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken);
 
         if (entity == null)
         {

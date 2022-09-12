@@ -22,12 +22,6 @@ public class UpdateObjectCommandValidator : AbstractValidator<UpdateObjectComman
         RuleFor(v => v.Description)
             .MaximumLength(500);
 
-        RuleFor(v => v.Id) 
-           .Cascade(CascadeMode.Stop)
-           .MustAsync(async (id, cancellation) => 
-                      await _objectService.IdExistsAsync(id, cancellation))
-                     .WithMessage("Object Id:'{PropertyValue}' not found");
-
         RuleFor(v => v)
             .Cascade(CascadeMode.Stop)
             .MustAsync(async (cmd, cancellation) => 

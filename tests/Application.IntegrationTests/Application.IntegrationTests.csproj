@@ -11,6 +11,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Objects\Commands\UpdateTodoItemTests.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
       <None Remove="appsettings.json" />
     </ItemGroup>
 
