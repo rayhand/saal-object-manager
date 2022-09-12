@@ -166,8 +166,6 @@ export class ObjectListComponent {
   }
 
 
-
-
   /* Relationships*/
 
   objectGetAutocompleServerResponse(event) {
@@ -184,9 +182,8 @@ export class ObjectListComponent {
 
   objectSelectEvent(item) {    
     var newItem = { ...item };
-    this.itemDetailsEditor.relatedObjects.push(newItem);
-    console.log(this.objectAutocomplete);
-    //this.objectAutocomplete.clear();
+    this.itemDetailsEditor.relatedObjects.push(newItem);    
+    //this.objectAutocomplete.clear(); // Not working unless -> TODO: move modal content to separate component
     //this.objectSearchCleared();
   }
 
