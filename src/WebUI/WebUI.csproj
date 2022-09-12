@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>$(DotNetTargetVersion)</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <Platforms>AnyCPU;x86</Platforms>
         <RootNamespace>OMS.WebUI</RootNamespace>
         <AssemblyName>OMS.WebUI</AssemblyName>
