@@ -1,0 +1,7 @@
+<Project>
+    <PropertyGroup Label="Solution SDK's Versions">
+        <DotNetTargetVersion>net6.0</DotNetTargetVersion>
+        <DotNetStandardTargetVersion>netstandard2.1</DotNetStandardTargetVersion>
+        <Platforms>AnyCPU;x86</Platforms>
+    </PropertyGroup>
+</Project>
