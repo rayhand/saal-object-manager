@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>$(DotNetTargetVersion)</TargetFramework>
+        <Platforms>AnyCPU;x86</Platforms>
         <RootNamespace>OMS.Application</RootNamespace>
         <AssemblyName>OMS.Application</AssemblyName>
         <ImplicitUsings>enable</ImplicitUsings>

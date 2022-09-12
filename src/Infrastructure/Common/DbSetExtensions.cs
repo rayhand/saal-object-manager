@@ -14,7 +14,7 @@ public static class DbSetExtensions
     /// <param name="entity"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static EntityEntry<T>? AddIfNotExists<T>(this DbSet<T> dbSet, T entity, Expression<Func<T, bool>> predicate = null) where T : class, new()
+    public static EntityEntry<T>? AddIfNotExists<T>(this DbSet<T> dbSet, T entity, Expression<Func<T, bool>>? predicate = null) where T : class, new()
     {
         var exists = predicate != null ? dbSet.Any(predicate) : dbSet.Any();
         return !exists ? dbSet.Add(entity) : null;
