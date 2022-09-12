@@ -18,7 +18,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         builder.ConfigureAppConfiguration(configurationBuilder =>
         {
             var integrationConfig = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile("tests.appsettings.json")
                 .AddEnvironmentVariables()
                 .Build();
 

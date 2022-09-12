@@ -15,11 +15,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="appsettings.json" />
+      <None Remove="tests.appsettings.json" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="appsettings.json">
+      <Content Include="tests.appsettings.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
